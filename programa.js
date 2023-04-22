@@ -1,71 +1,32 @@
-let botonS = document.getElementById("submit-s");
-botonS.addEventListener("click", async (event) => {
+const submitBtn = document.getElementById("submitBtn");
+submitBtn.addEventListener("click", async (event) => {
   event.preventDefault();
-  const numero_1 = parseFloat(document.getElementById("numero_1").value);
-  const numero_2 = parseFloat(document.getElementById("numero_2").value);
-  const respuesta = await fetch("http://localhost:3000/api/sumar", {
+  
+  endpointMap = {
+    "sumBtnradio": "api/sumar/",
+    "restBtnradio": "api/restar/",
+    "multBtnradio": "api/multiplicar/",
+    "divBtnradio": "api/dividir/"
+  }
+  let resultEndpoint = null
+  for (const [id, endpoint] of Object.entries(endpointMap)) {
+    let Btnradio = document.getElementById(id);
+    if (Btnradio.checked) {
+      resultEndpoint = endpoint
+    }
+  }
+
+  const num_1 = parseFloat(document.getElementById("numero_1").value);
+  const num_2 = parseFloat(document.getElementById("numero_2").value);
+  const response = await fetch("http://localhost:3000/" + resultEndpoint, {
     "method": "POST",
     "headers": {
       "Content-Type": "application/json",
     },
-    "body": JSON.stringify({ numero_1, numero_2 }), 
+    "body": JSON.stringify({ numbers_to_operate: [num_1, num_2] }), 
   });
 
-  const dato = await respuesta.json();
-  const div_resultado = document.getElementById("resultado");
-  div_resultado.innerHTML = dato;
-});
-
-let botonR = document.getElementById("submit-r");
-botonR.addEventListener("click", async (event) => {
-  event.preventDefault(); 
-  const numero_1 = parseFloat(document.getElementById("numero_1").value);
-  const numero_2 = parseFloat(document.getElementById("numero_2").value);
-  const respuesta = await fetch("http://localhost:3000/api/restar", {
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json",
-    },
-    "body": JSON.stringify({ numero_1, numero_2 }),
-  });
-
-  const dato = await respuesta.json();
-  const div_resultado = document.getElementById("resultado");
-  div_resultado.innerHTML = dato;
-});
-
-let botonM = document.getElementById("submit-m");
-botonM.addEventListener("click", async (event) => {
-  event.preventDefault();
-  const numero_1 = parseFloat(document.getElementById("numero_1").value);
-  const numero_2 = parseFloat(document.getElementById("numero_2").value);
-  const respuesta = await fetch("http://localhost:3000/api/multiplicar", {
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json",
-    },
-    "body": JSON.stringify({ numero_1, numero_2 }), 
-  });
-
-  const dato = await respuesta.json();
-  const div_resultado = document.getElementById("resultado");
-  div_resultado.innerHTML = dato;
-});
-
-let botonD = document.getElementById("submit-d");
-botonD.addEventListener("click", async (event) => {
-  event.preventDefault();
-  const numero_1 = parseFloat(document.getElementById("numero_1").value);
-  const numero_2 = parseFloat(document.getElementById("numero_2").value);
-  const respuesta = await fetch("http://localhost:3000/api/dividir", {
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json",
-    },
-    "body": JSON.stringify({ numero_1, numero_2 }), 
-  });
-
-  const dato = await respuesta.json();
-  const div_resultado = document.getElementById("resultado");
-  div_resultado.innerHTML = dato;
+  const result_str = String( (await response.json())["result"]);
+  const resultBox = document.getElementById("resultBox");
+  resultBox.innerHTML = result_str;
 });
